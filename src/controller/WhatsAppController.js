@@ -3,7 +3,7 @@ class WhatsAppController {
 
     constructor() {
 
-        console.log('WhatsAppController OK');
+        // console.log('WhatsAppController OK');
 
         this.elementsPrototype();
         this.loadElements();
@@ -164,23 +164,138 @@ class WhatsAppController {
 
         this.el.btnAttachPhoto.on('click', e => {
 
-            console.log('photo');
+           this.el.inputPhoto.click();
+        });
+
+        this.el.inputPhoto.on('change', e => {
+
+            console.log(this.el.inputPhoto.files);
+            [...this.el.inputPhoto.files].forEach(file => {
+
+                console.log(file);
+            });
         });
 
         this.el.btnAttachCamera.on('click', e => {
 
-            console.log('camera');
+            this.closeAllMainPanel();
+            this.el.panelCamera.addClass('open');
+            this.el.panelCamera.css({
+                'height': 'calc(100% - 130px)'
+            });
+        });
+
+        this.el.btnClosePanelCamera.on('click', e => {
+
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+
+        this.el.btnTakePicture.on('click', e => {
+
+            console.log('take picture');
         });
 
         this.el.btnAttachDocument.on('click', e => {
 
-            console.log('document');
+            this.closeAllMainPanel();
+            this.el.panelDocumentPreview.addClass('open');
+            this.el.panelDocumentPreview.css({
+                'height': 'calc(100% - 130px)'
+            });
+        });
+
+        this.el.btnClosePanelDocumentPreview.on('click', e => {
+
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+
+        this.el.btnSendDocument.on('click', e => {
+
+            console.log('send document');
         });
 
         this.el.btnAttachContact.on('click', e => {
 
-            console.log('contact');
+            this.el.modalContacts.show();
         });
+
+        this.el.btnCloseModalContacts.on('click', e => {
+
+            this.el.modalContacts.hide();
+        });
+
+        this.el.btnSendMicrophone.on('click', e => {
+
+            this.el.recordMicrophone.show();
+            this.el.btnSendMicrophone.hide();
+            this.startRecordMicrophoneTime();
+        });
+
+        this.el.btnCancelMicrophone.on('click', e => {
+
+            this.closeRecordMicrophone();
+        });
+
+        this.el.btnFinishMicrophone.on('click', e => {
+
+            this.closeRecordMicrophone();
+        });
+
+        this.el.inputText.on('keypress', e => {
+
+            if (e.key === 'Enter' && !e.ctrlKey) {
+
+                e.preventDefault();
+                this.el.btnSend.click();
+            }
+        });
+
+        this.el.inputText.on('keyup', e => {
+
+            if(this.el.inputText.innerHTML.length) {
+
+                this.el.inputPlaceholder.hide();
+                this.el.btnSendMicrophone.hide();
+                this.el.btnSend.show();
+
+            } else {
+
+                this.el.inputPlaceholder.show();
+                this.el.btnSendMicrophone.show();
+                this.el.btnSend.hide();
+            }
+        });
+
+        this.el.btnSend.on('click', e => {
+
+            console.log(this.el.inputText.innerHTML);
+        });
+    }
+
+    startRecordMicrophoneTime() {
+
+        let start = Date.now();
+
+        this._recordMicrophoneInterval = setInterval(() => {
+
+            this.el.recordMicrophoneTimer.innerHTML = Format.toTime(Date.now() - start);
+        }, 100);
+    }
+
+    closeRecordMicrophone() {
+     
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophoneInterval);
+    }
+
+    closeAllMainPanel() {
+
+        this.el.panelMessagesContainer.hide();
+        this.el.panelDocumentPreview.removeClass('open');
+        this.el.panelCamera.removeClass('open');
     }
 
     closeMenuAttach(e) {
@@ -194,5 +309,4 @@ class WhatsAppController {
         this.el.panelAddContact.hide();
         this.el.panelEditProfile.hide();
     }
-// app.el.btnNewContact.on('click mouseover dblclick', (event) => { console.log('clicou', event.type) })
 }
